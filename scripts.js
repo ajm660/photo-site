@@ -6,7 +6,7 @@ const loadImages = (section) => {
   
     for (let i = 1; i <= numberOfImages; i++) {
       const imgDiv = document.createElement('div');
-      imgDiv.className = 'overflow-hidden rounded-lg shadow-lg';
+      imgDiv.className = 'overflow-hidden rounded-lg shadow-lg mb-2';
   
       const img = document.createElement('img');
       img.src = `${folderPath}/image-${i}.jpg`;
@@ -19,6 +19,16 @@ const loadImages = (section) => {
       imgDiv.appendChild(img);
       imageGrid.appendChild(imgDiv);
     }
+
+    // Initialize Masonry after images are loaded
+    imagesLoaded(imageGrid, function() {
+      new Masonry(imageGrid, {
+        itemSelector: '.overflow-hidden',
+        columnWidth: 200,
+        gutter: 10,
+        fitWidth: true
+      });
+    });
   };
   
   // Function to toggle fullscreen mode for an image
