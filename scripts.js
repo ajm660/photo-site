@@ -6,7 +6,7 @@ const loadImages = (section) => {
   
     for (let i = 1; i <= numberOfImages; i++) {
       const imgDiv = document.createElement('div');
-      imgDiv.className = 'overflow-hidden rounded-lg shadow-lg';
+      imgDiv.className = 'overflow-hidden rounded-lg shadow-lg p-1';
   
       const img = document.createElement('img');
       img.src = `${folderPath}/image-${i}.jpg`;
