@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Portfolio</title>
+		<!-- Goes in the tab -->
+		<script src="https://cdn.tailwindcss.com"></script>
+		<style>
+			html {
+				scroll-behavior: smooth;
+			}
+		</style>
+	</head>
+	<body class="bg-gray-100 text-gray-800 scroll-p-48">
+		<!-- Navigation Section -->
+		<header class="bg-blue-400 text-white sticky top-0 z-50">
+			<div class="container mx-auto flex justify-center p-4">
+				<!-- Flex to centre group -->
+				<div class="grid grid-cols-3 gap-4 sm:gap-x-6 md:gap-x-8">
+					<!-- Grid to set columns -->
+					<a
+						href="#section1"
+						class="w-20 text-center px-2 py-1 bg-blue-700 rounded-lg hover:bg-green-400"
+						>Things</a
+					>
+
+					<a
+						href="#section2"
+						class="w-20 text-center px-2 py-1 bg-blue-700 rounded-lg hover:bg-green-400"
+						>Places</a
+					>
+
+					<a
+						href="#section3"
+						class="w-20 text-center px-2 py-1 bg-blue-700 rounded-lg hover:bg-green-400"
+						>People</a
+					>
+				</div>
+			</div>
+		</header>
+
+		<!-- Sections -->
+		<section
+			id="section1"
+			class="lazy-section container mx-auto py-10"
+			data-folder="/static/images/section1-things"
+			data-count="143"
+		>
+			<h2 class="text-3xl font-bold text-center mb-6">Things</h2>
+			<div
+				class="image-grid grid gap-2 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6"
+			></div>
+		</section>
+
+		<section
+			id="section2"
+			class="lazy-section container mx-auto py-10 bg-gray-200"
+			data-folder="/static/images/section2-places"
+			data-count="42"
+		>
+			<h2 class="text-3xl font-bold text-center mb-6">Places</h2>
+			<div
+				class="image-grid grid gap-2 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6"
+			></div>
+		</section>
+
+		<section
+			id="section3"
+			class="lazy-section container mx-auto py-10"
+			data-folder="/static/images/section3-people"
+			data-count="5"
+		>
+			<h2 class="text-3xl font-bold text-center mb-6">People</h2>
+			<div
+				class="image-grid grid gap-2 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6"
+			></div>
+		</section>
+
+		<!-- Add more sections as needed -->
+		<script src="scripts.js"></script>
+	</body>
+</html>
