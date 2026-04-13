@@ -6,7 +6,7 @@ const loadImages = (section) => {
   
     for (let i = 1; i <= numberOfImages; i++) {
       const imgDiv = document.createElement('div');
-      imgDiv.className = 'overflow-hidden rounded-lg shadow-lg mb-2';
+      imgDiv.className = 'overflow-hidden rounded-lg shadow-lg';
   
       const img = document.createElement('img');
       img.src = `${folderPath}/image-${i}.jpg`;
@@ -20,9 +20,9 @@ const loadImages = (section) => {
       imageGrid.appendChild(imgDiv);
     }
 
-    // Initialize Masonry after images are loaded
+    // Initialize CSS Grid Masonry after images are loaded
     imagesLoaded(imageGrid, function() {
-      const width = imageGrid.offsetWidth;
+      const width = window.innerWidth; // Use window width for breakpoints
       let numColumns;
       if (section.id === 'section1') {
         if (width < 768) numColumns = 2;
@@ -36,13 +36,10 @@ const loadImages = (section) => {
         else if (width < 1280) numColumns = 4;
         else numColumns = 6;
       }
-      const columnWidth = width / numColumns;
-      new Masonry(imageGrid, {
-        itemSelector: '.overflow-hidden',
-        columnWidth: columnWidth,
-        gutter: 10,
-        fitWidth: true
-      });
+      imageGrid.style.display = 'grid';
+      imageGrid.style.gridTemplateRows = 'masonry';
+      imageGrid.style.gridTemplateColumns = `repeat(${numColumns}, 1fr)`;
+      imageGrid.style.gap = '10px';
     });
   };
   
