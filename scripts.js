@@ -6,12 +6,12 @@ const loadImages = (section) => {
   
     for (let i = 1; i <= numberOfImages; i++) {
       const imgDiv = document.createElement('div');
-      imgDiv.className = 'overflow-hidden rounded-lg shadow-lg p-1';
+      imgDiv.className = 'overflow-hidden rounded-md';
   
       const img = document.createElement('img');
       img.src = `${folderPath}/image-${i}.jpg`;
       img.alt = `Image ${i}`;
-      img.className = 'w-full h-auto object-cover cursor-pointer';
+      img.className = 'w-full h-auto object-cover cursor-pointer rounded-md shadow-md';
   
       // Add click event listener to toggle fullscreen
       img.addEventListener('click', () => toggleFullScreenImage(img));
