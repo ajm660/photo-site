@@ -22,9 +22,24 @@ const loadImages = (section) => {
 
     // Initialize Masonry after images are loaded
     imagesLoaded(imageGrid, function() {
+      const width = imageGrid.offsetWidth;
+      let numColumns;
+      if (section.id === 'section1') {
+        if (width < 768) numColumns = 2;
+        else if (width < 1024) numColumns = 3;
+        else if (width < 1280) numColumns = 4;
+        else numColumns = 6;
+      } else {
+        if (width < 640) numColumns = 1;
+        else if (width < 768) numColumns = 2;
+        else if (width < 1024) numColumns = 3;
+        else if (width < 1280) numColumns = 4;
+        else numColumns = 6;
+      }
+      const columnWidth = width / numColumns;
       new Masonry(imageGrid, {
         itemSelector: '.overflow-hidden',
-        columnWidth: 200,
+        columnWidth: columnWidth,
         gutter: 10,
         fitWidth: true
       });
