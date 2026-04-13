@@ -11,7 +11,7 @@ const loadImages = (section) => {
       const img = document.createElement('img');
       img.src = `${folderPath}/image-${i}.jpg`;
       img.alt = `Image ${i}`;
-      img.className = 'w-full h-auto object-cover cursor-pointer rounded-md shadow-md';
+      img.className = 'w-full h-auto object-cover cursor-pointer rounded-md shadow-xl';
   
       // Add click event listener to toggle fullscreen
       img.addEventListener('click', () => toggleFullScreenImage(img));
