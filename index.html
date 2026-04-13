@@ -7,6 +7,7 @@
 		<!-- Goes in the tab -->
 		<script src="https://cdn.tailwindcss.com"></script>
 		<script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
+		<script src="https://upload-widget.cloudinary.com/latest/index.js"></script>
 		<style>
 			html {
 				scroll-behavior: smooth;
@@ -16,30 +17,56 @@
 	<body class="bg-gray-100 text-gray-800 scroll-p-48">
 		<!-- Navigation Section -->
 		<header class="bg-blue-400 text-white sticky top-0 z-50">
-			<div class="container mx-auto flex justify-center p-4">
-				<!-- Flex to centre group -->
-				<div class="grid grid-cols-3 gap-4 sm:gap-x-6 md:gap-x-8">
-					<!-- Grid to set columns -->
+			<div class="container mx-auto flex justify-between items-center p-4">
+				<!-- Navigation Links -->
+				<div class="grid grid-cols-3 gap-4 sm:gap-x-6 md:gap-x-8 flex-1 justify-center">
 					<a
 						href="#section1"
 						class="w-20 text-center px-2 py-1 bg-blue-700 rounded-lg hover:bg-green-400"
-						>Things</a
+						>things</a
 					>
 
 					<a
 						href="#section2"
 						class="w-20 text-center px-2 py-1 bg-blue-700 rounded-lg hover:bg-green-400"
-						>Places</a
+						>places</a
 					>
 
 					<a
 						href="#section3"
 						class="w-20 text-center px-2 py-1 bg-blue-700 rounded-lg hover:bg-green-400"
-						>People</a
+						>people</a
 					>
 				</div>
+				<!-- Upload Button -->
+				<button
+					id="uploadBtn"
+					class="px-4 py-2 bg-green-500 rounded-lg hover:bg-green-600 text-white font-semibold"
+					>+ Upload</button
+				>
 			</div>
 		</header>
+
+		<!-- Upload Modal -->
+		<div id="uploadModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40">
+			<div class="bg-white rounded-lg p-6 max-w-sm w-full">
+				<h3 class="text-2xl font-bold mb-4">Upload Photo</h3>
+				<label class="block mb-4">
+					<span class="text-gray-700 font-semibold mb-2 block">Select Section:</span>
+					<select id="sectionSelect" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+						<option value="things">things</option>
+						<option value="places">places</option>
+						<option value="people">people</option>
+					</select>
+				</label>
+				<button id="openCloudinary" class="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+					Choose Image
+				</button>
+				<button id="closeModal" class="w-full mt-2 px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
+					Cancel
+				</button>
+			</div>
+		</div>
 
 		<!-- Sections -->
 		<section
@@ -47,8 +74,9 @@
 			class="lazy-section container mx-auto py-10"
 			data-folder="/images/section1-things"
 			data-count="143"
+			data-section="things"
 		>
-			<h2 class="text-3xl font-bold text-center mb-6">Things</h2>
+			<h2 class="text-3xl font-bold text-center mb-6">things</h2>
 			<div class="image-grid"></div>
 		</section>
 
@@ -57,8 +85,9 @@
 			class="lazy-section container mx-auto py-10 bg-gray-200"
 			data-folder="/images/section2-places"
 			data-count="42"
+			data-section="places"
 		>
-			<h2 class="text-3xl font-bold text-center mb-6">Places</h2>
+			<h2 class="text-3xl font-bold text-center mb-6">places</h2>
 			<div class="image-grid"></div>
 		</section>
 
@@ -67,8 +96,9 @@
 			class="lazy-section container mx-auto py-10"
 			data-folder="/images/section3-people"
 			data-count="5"
+			data-section="people"
 		>
-			<h2 class="text-3xl font-bold text-center mb-6">People</h2>
+			<h2 class="text-3xl font-bold text-center mb-6">people</h2>
 			<div class="image-grid"></div>
 		</section>
 
