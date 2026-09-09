@@ -10,3 +10,5 @@ app/static/css/app.css
 
 instance/
 .pytest_cache/
+
+note.md
