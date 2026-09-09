@@ -3,16 +3,33 @@
 {% block title %}Upload{% endblock %}
 
 {% block content %}
-<h1 class="text-xl mb-6">Upload a photograph</h1>
+<h1 class="text-xl mb-6">Upload photographs</h1>
 
-<form method="post" enctype="multipart/form-data" class="space-y-4">
-  <input type="file" name="photo" accept="image/jpeg" required>
-  {% if duplicate_filename %}
-    <label class="flex items-center gap-2 text-sm text-amber-700">
-      <input type="checkbox" name="confirm_duplicate" value="1">
-      Upload anyway — this is not a duplicate
-    </label>
+<form method="post" enctype="multipart/form-data" class="space-y-4" x-data="{ names: [] }">
+  <input type="file" name="photo" accept="image/jpeg" multiple required
+         @change="names = Array.from($event.target.files).map(f => f.name)">
+
+  <ul class="text-sm text-neutral-600 space-y-0.5" x-show="names.length">
+    <template x-for="name in names" :key="name">
+      <li x-text="name"></li>
+    </template>
+  </ul>
+
+  {% if duplicate_filenames %}
+    <div class="text-sm text-amber-700 space-y-2">
+      <p>These filenames look like they may already be uploaded:</p>
+      <ul class="list-disc list-inside">
+        {% for name in duplicate_filenames %}
+          <li>{{ name }}</li>
+        {% endfor %}
+      </ul>
+      <label class="flex items-center gap-2">
+        <input type="checkbox" name="confirm_duplicate" value="1">
+        Upload anyway — these are not duplicates
+      </label>
+    </div>
   {% endif %}
+
   <button type="submit" class="bg-neutral-900 text-white px-4 py-2">Upload</button>
 </form>
 {% endblock %}

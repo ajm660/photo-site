@@ -66,56 +66,80 @@ def upload():
     if request.method == "GET":
         return render_template("admin/upload.html")
 
-    file = request.files.get("photo")
-    if not file or not file.filename:
-        flash("Choose a photograph to upload.", "error")
+    files = [f for f in request.files.getlist("photo") if f and f.filename]
+    if not files:
+        flash("Choose at least one photograph to upload.", "error")
         return render_template("admin/upload.html")
 
-    filename = file.filename
     confirmed = request.form.get("confirm_duplicate") == "1"
 
-    if not confirmed and Photo.query.filter_by(original_filename=filename).first():
+    if not confirmed:
+        duplicate_filenames = [
+            f.filename
+            for f in files
+            if Photo.query.filter_by(original_filename=f.filename).first()
+        ]
+        if duplicate_filenames:
+            flash(
+                "These filenames look like they may already be uploaded: "
+                + ", ".join(duplicate_filenames)
+                + ". Re-select your files and confirm below to upload anyway.",
+                "warning",
+            )
+            return render_template(
+                "admin/upload.html", duplicate_filenames=duplicate_filenames
+            )
+
+    uploaded, failed = [], []
+    for file in files:
+        filename = file.filename
+        suffix = os.path.splitext(filename)[1]
+        with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
+            file.save(tmp.name)
+            tmp_path = tmp.name
+
+        try:
+            if not _is_valid_image(tmp_path):
+                failed.append(filename)
+                continue
+
+            metadata = metadata_service.extract_metadata(tmp_path)
+            upload_result = cloudinary_service.upload_photo(tmp_path)
+
+            photo = Photo(
+                cloudinary_public_id=upload_result["public_id"],
+                original_filename=filename,
+                title=metadata["title"],
+                description=metadata["description"],
+                width=upload_result.get("width"),
+                height=upload_result.get("height"),
+                date_taken=metadata["date_taken"],
+                camera=metadata["camera"],
+                lens=metadata["lens"],
+                published=True,
+            )
+            db.session.add(photo)
+            keyword_service.import_keywords(photo, metadata)
+            db.session.commit()
+            uploaded.append(filename)
+        except Exception:
+            db.session.rollback()
+            failed.append(filename)
+        finally:
+            os.unlink(tmp_path)
+
+    if uploaded:
         flash(
-            f'"{filename}" looks like it may already be uploaded. '
-            "Re-select the file and confirm below to upload anyway.",
-            "warning",
+            f"Uploaded {len(uploaded)} photograph(s): " + ", ".join(uploaded),
+            "success",
         )
-        return render_template("admin/upload.html", duplicate_filename=filename)
-
-    suffix = os.path.splitext(filename)[1]
-    with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
-        file.save(tmp.name)
-        tmp_path = tmp.name
-
-    try:
-        if not _is_valid_image(tmp_path):
-            flash("That file doesn't look like a valid image.", "error")
-            return render_template("admin/upload.html")
-
-        metadata = metadata_service.extract_metadata(tmp_path)
-        upload_result = cloudinary_service.upload_photo(tmp_path)
-
-        photo = Photo(
-            cloudinary_public_id=upload_result["public_id"],
-            original_filename=filename,
-            title=metadata["title"],
-            description=metadata["description"],
-            width=upload_result.get("width"),
-            height=upload_result.get("height"),
-            date_taken=metadata["date_taken"],
-            camera=metadata["camera"],
-            lens=metadata["lens"],
-            published=True,
+    if failed:
+        flash(
+            "Failed to upload (not a valid image, or an error occurred): "
+            + ", ".join(failed),
+            "error",
         )
-        db.session.add(photo)
 
-        keyword_service.import_keywords(photo, metadata)
-
-        db.session.commit()
-    finally:
-        os.unlink(tmp_path)
-
-    flash(f'Uploaded "{filename}".', "success")
     return redirect(url_for("gallery.index"))
 
 
