@@ -29,7 +29,7 @@
   </form>
 {% endif %}
 
-<div class="tiled-gallery gap-1 sm:gap-2" x-data='lightboxGallery({{ photos_for_lightbox | tojson }})'>
+<div class="masonry-gallery" x-data='lightboxGallery({{ photos_for_lightbox | tojson }})'>
   {% for photo in photos %}
     <a href="{{ url_for('gallery.photo_detail', photo_id=photo.id) }}" @click.prevent="open({{ loop.index0 }})">
       <img
