@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Upload{% endblock %}
+
+{% block content %}
+<h1 class="text-xl mb-6">Upload a photograph</h1>
+
+<form method="post" enctype="multipart/form-data" class="space-y-4">
+  <input type="file" name="photo" accept="image/jpeg" required>
+  {% if duplicate_filename %}
+    <label class="flex items-center gap-2 text-sm text-amber-700">
+      <input type="checkbox" name="confirm_duplicate" value="1">
+      Upload anyway — this is not a duplicate
+    </label>
+  {% endif %}
+  <button type="submit" class="bg-neutral-900 text-white px-4 py-2">Upload</button>
+</form>
+{% endblock %}

@@ -1,0 +1,10 @@
+Flask==3.1.1
+Flask-SQLAlchemy==3.1.1
+Flask-Migrate==4.1.0
+SQLAlchemy==2.0.43
+psycopg2-binary==2.9.10
+cloudinary==1.44.1
+python-dotenv==1.1.1
+python-slugify==8.0.4
+Pillow==11.0.0
+gunicorn==23.0.0

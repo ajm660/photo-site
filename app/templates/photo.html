@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}{{ photo.title or photo.original_filename }}{% endblock %}
+
+{% block content %}
+<figure>
+  <img src="{{ photo.large_url }}" alt="{{ photo.title or photo.original_filename }}" class="w-full h-auto">
+  {% if photo.title or photo.description %}
+    <figcaption class="mt-4 text-neutral-600">
+      {% if photo.title %}<p class="font-medium">{{ photo.title }}</p>{% endif %}
+      {% if photo.description %}<p>{{ photo.description }}</p>{% endif %}
+    </figcaption>
+  {% endif %}
+</figure>
+
+{% if photo.keywords %}
+  <ul class="mt-4 flex flex-wrap gap-2 text-sm text-neutral-500">
+    {% for keyword in photo.keywords %}
+      <li>{{ keyword.name }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+{% endblock %}

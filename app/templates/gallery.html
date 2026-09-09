@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Photography{% endblock %}
+
+{% block content %}
+{% if keywords %}
+<nav class="mb-8 flex flex-wrap gap-3 text-sm uppercase tracking-wide text-neutral-500">
+  <a href="{{ url_for('gallery.index') }}"
+     class="{{ 'text-neutral-900 font-medium' if not selected_keyword else 'hover:text-neutral-900' }}">
+    All
+  </a>
+  {% for keyword in keywords %}
+    <a href="{{ url_for('gallery.index', keyword=keyword.slug) }}"
+       class="{{ 'text-neutral-900 font-medium' if selected_keyword == keyword.slug else 'hover:text-neutral-900' }}">
+      {{ keyword.name }}
+    </a>
+  {% endfor %}
+</nav>
+{% endif %}
+
+<div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+  {% for photo in photos %}
+    <a href="{{ url_for('gallery.photo_detail', photo_id=photo.id) }}" class="block group">
+      <img
+        src="{{ photo.thumbnail_url }}"
+        alt="{{ photo.title or photo.original_filename }}"
+        loading="lazy"
+        class="w-full h-auto object-cover"
+      >
+    </a>
+  {% else %}
+    <p class="col-span-full text-neutral-500">No photographs published yet.</p>
+  {% endfor %}
+</div>
+{% endblock %}
