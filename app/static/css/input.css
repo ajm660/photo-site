@@ -1,3 +1,46 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+/* Justified/tiled gallery: every row is a constant height, tile widths vary
+   by each photo's own aspect ratio. Pure CSS (no JS) — flex-grow distributes
+   each row's leftover width across its tiles, using the intrinsic aspect
+   ratio from the <img>'s width/height attributes as the starting size. */
+.tiled-gallery {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* The <a> wrapper is removed from the layout tree (but stays clickable) so
+   the <img> is the actual flex item — its natural rendered width at the
+   fixed height (from the width/height attributes' aspect ratio) is what
+   flex-grow uses as the growth basis. */
+.tiled-gallery > a {
+  display: contents;
+}
+
+/* max-width caps how far flex-grow can stretch a tile. Without it, a row
+   with too few photos to naturally fill the container's width (most often
+   just one photo) gets stretched edge-to-edge at a fixed height, cropping
+   out most of the image via object-fit: cover. The cap is roughly a 3:1
+   width:height ceiling, matched to each breakpoint's row height. */
+.tiled-gallery img {
+  display: block;
+  height: 140px;
+  width: auto;
+  max-width: 420px;
+  flex-grow: 1;
+  object-fit: cover;
+}
+
+@media (min-width: 640px) {
+  .tiled-gallery img {
+    height: 200px;
+    max-width: 600px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .tiled-gallery img {
+    height: 260px;
+    max-width: 780px;
+  }
+}

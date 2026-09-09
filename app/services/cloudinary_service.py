@@ -25,8 +25,13 @@ def delete_photo(public_id):
 
 
 def get_thumbnail_url(public_id):
+    """Scaled to ~2x the gallery's target row height (for retina), full width
+    preserved so the browser can crop it to fit the justified row via CSS
+    object-fit — no server-side crop needed since the display box varies
+    per photo/row width.
+    """
     url, _ = cloudinary_url(
-        public_id, width=700, crop="fill", quality="auto", fetch_format="auto"
+        public_id, height=520, crop="scale", quality="auto", fetch_format="auto"
     )
     return url
 

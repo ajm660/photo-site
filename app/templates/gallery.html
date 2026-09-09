@@ -18,18 +18,19 @@
 </nav>
 {% endif %}
 
-<div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+<div class="tiled-gallery gap-1 sm:gap-2">
   {% for photo in photos %}
-    <a href="{{ url_for('gallery.photo_detail', photo_id=photo.id) }}" class="block group">
+    <a href="{{ url_for('gallery.photo_detail', photo_id=photo.id) }}">
       <img
         src="{{ photo.thumbnail_url }}"
         alt="{{ photo.title or photo.original_filename }}"
+        width="{{ photo.width }}"
+        height="{{ photo.height }}"
         loading="lazy"
-        class="w-full h-auto object-cover"
       >
     </a>
   {% else %}
-    <p class="col-span-full text-neutral-500">No photographs published yet.</p>
+    <p class="text-neutral-500">No photographs published yet.</p>
   {% endfor %}
 </div>
 {% endblock %}

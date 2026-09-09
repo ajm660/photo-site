@@ -3,7 +3,6 @@ FROM node:20-slim AS css
 WORKDIR /build
 COPY package.json package-lock.json ./
 RUN npm ci
-COPY tailwind.config.js ./
 COPY app/templates ./app/templates
 COPY app/static/css/input.css ./app/static/css/input.css
 RUN npm run build-css
