@@ -12,4 +12,7 @@ class Config:
     CLOUDINARY_API_KEY = os.environ.get("CLOUDINARY_API_KEY")
     CLOUDINARY_API_SECRET = os.environ.get("CLOUDINARY_API_SECRET")
 
+    ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
+    ADMIN_PASSWORD_HASH = os.environ.get("ADMIN_PASSWORD_HASH")
+
     MAX_CONTENT_LENGTH = 25 * 1024 * 1024  # 25 MB upload limit

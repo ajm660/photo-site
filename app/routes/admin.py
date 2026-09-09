@@ -1,8 +1,19 @@
 import os
 import tempfile
+from functools import wraps
 
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import (
+    Blueprint,
+    current_app,
+    flash,
+    redirect,
+    render_template,
+    request,
+    session,
+    url_for,
+)
 from PIL import Image, UnidentifiedImageError
+from werkzeug.security import check_password_hash
 
 from app.extensions import db
 from app.models import Photo
@@ -11,7 +22,46 @@ from app.services import cloudinary_service, keyword_service, metadata_service
 admin_bp = Blueprint("admin", __name__)
 
 
+def login_required(view):
+    @wraps(view)
+    def wrapped(*args, **kwargs):
+        if not session.get("admin_logged_in"):
+            return redirect(url_for("admin.login", next=request.path))
+        return view(*args, **kwargs)
+
+    return wrapped
+
+
+@admin_bp.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "GET":
+        return render_template("admin/login.html")
+
+    username = request.form.get("username", "")
+    password = request.form.get("password", "")
+    password_hash = current_app.config["ADMIN_PASSWORD_HASH"]
+
+    valid = (
+        password_hash
+        and username == current_app.config["ADMIN_USERNAME"]
+        and check_password_hash(password_hash, password)
+    )
+    if not valid:
+        flash("Incorrect username or password.", "error")
+        return render_template("admin/login.html")
+
+    session["admin_logged_in"] = True
+    return redirect(request.form.get("next") or url_for("admin.upload"))
+
+
+@admin_bp.route("/logout", methods=["POST"])
+def logout():
+    session.pop("admin_logged_in", None)
+    return redirect(url_for("gallery.index"))
+
+
 @admin_bp.route("/upload", methods=["GET", "POST"])
+@login_required
 def upload():
     if request.method == "GET":
         return render_template("admin/upload.html")

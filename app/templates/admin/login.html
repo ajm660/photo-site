@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Admin login{% endblock %}
+
+{% block content %}
+<h1 class="text-xl mb-6">Admin login</h1>
+
+<form method="post" class="space-y-4 max-w-xs">
+  <input type="hidden" name="next" value="{{ request.args.get('next', '') }}">
+  <div>
+    <label class="block text-sm mb-1" for="username">Username</label>
+    <input class="border px-3 py-2 w-full" type="text" id="username" name="username" required autofocus>
+  </div>
+  <div>
+    <label class="block text-sm mb-1" for="password">Password</label>
+    <input class="border px-3 py-2 w-full" type="password" id="password" name="password" required>
+  </div>
+  <button type="submit" class="bg-neutral-900 text-white px-4 py-2">Log in</button>
+</form>
+{% endblock %}
