@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+[x-cloak] {
+  display: none !important;
+}
+
 /* Justified/tiled gallery: every row is a constant height, tile widths vary
    by each photo's own aspect ratio. Pure CSS (no JS) — flex-grow distributes
    each row's leftover width across its tiles, using the intrinsic aspect

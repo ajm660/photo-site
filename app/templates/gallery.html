@@ -3,24 +3,40 @@
 {% block title %}Photography{% endblock %}
 
 {% block content %}
-{% if keywords %}
-<nav class="mb-8 flex flex-wrap gap-3 text-sm uppercase tracking-wide text-neutral-500">
+<nav class="mb-4 flex flex-wrap gap-x-5 gap-y-2 text-sm uppercase tracking-wide text-neutral-500">
   <a href="{{ url_for('gallery.index') }}"
-     class="{{ 'text-neutral-900 font-medium' if not selected_keyword else 'hover:text-neutral-900' }}">
+     class="{{ 'text-neutral-900 font-medium' if not selected_category else 'hover:text-neutral-900' }}">
     All
   </a>
-  {% for keyword in keywords %}
-    <a href="{{ url_for('gallery.index', keyword=keyword.slug) }}"
-       class="{{ 'text-neutral-900 font-medium' if selected_keyword == keyword.slug else 'hover:text-neutral-900' }}">
-      {{ keyword.name }}
+  {% for cat in categories %}
+    <a href="{{ url_for('gallery.index', category=cat.slug) }}"
+       class="{{ 'text-neutral-900 font-medium' if selected_category == cat.slug else 'hover:text-neutral-900' }}">
+      {{ cat.name }}
     </a>
   {% endfor %}
 </nav>
+
+{% if available_tags %}
+  <details class="mb-8 text-sm">
+    <summary class="cursor-pointer text-neutral-500 uppercase tracking-wide inline-block select-none">
+      Filter{% if selected_tags %} ({{ selected_tags|length }}){% endif %}
+    </summary>
+    <form method="get" class="mt-3 flex flex-wrap gap-x-6 gap-y-2">
+      {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category }}">{% endif %}
+      {% for tag in available_tags %}
+        <label class="flex items-center gap-1.5 text-neutral-700 normal-case tracking-normal">
+          <input type="checkbox" name="tags" value="{{ tag.slug }}" {{ 'checked' if tag.slug in selected_tags else '' }}>
+          {{ tag.name }}
+        </label>
+      {% endfor %}
+      <button type="submit" class="text-neutral-900 underline underline-offset-2">Apply</button>
+    </form>
+  </details>
 {% endif %}
 
-<div class="tiled-gallery gap-1 sm:gap-2">
+<div class="tiled-gallery gap-1 sm:gap-2" x-data='lightboxGallery({{ photos_for_lightbox | tojson }})'>
   {% for photo in photos %}
-    <a href="{{ url_for('gallery.photo_detail', photo_id=photo.id) }}">
+    <a href="{{ url_for('gallery.photo_detail', photo_id=photo.id) }}" @click.prevent="open({{ loop.index0 }})">
       <img
         src="{{ photo.thumbnail_url }}"
         alt="{{ photo.title or photo.original_filename }}"
@@ -32,5 +48,23 @@
   {% else %}
     <p class="text-neutral-500">No photographs published yet.</p>
   {% endfor %}
+
+  <div
+    x-show="active !== null"
+    x-cloak
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/95"
+    @keydown.window.escape="close()"
+    @keydown.window.arrow-left="prev()"
+    @keydown.window.arrow-right="next()"
+    @touchstart="touchStart($event)"
+    @touchend="touchEnd($event)"
+  >
+    <button @click="close()" class="absolute top-4 right-4 text-3xl leading-none text-white/80 hover:text-white" aria-label="Close">&times;</button>
+    <button @click="prev()" class="absolute left-2 sm:left-4 text-4xl text-white/80 hover:text-white" aria-label="Previous photo">&#8249;</button>
+    <template x-if="active !== null">
+      <img :src="current().src" :alt="current().title" class="max-h-[90vh] max-w-[92vw] object-contain">
+    </template>
+    <button @click="next()" class="absolute right-2 sm:right-4 text-4xl text-white/80 hover:text-white" aria-label="Next photo">&#8250;</button>
+  </div>
 </div>
 {% endblock %}
