@@ -16,24 +16,6 @@
   {% endfor %}
 </nav>
 
-{% if available_tags %}
-  <details class="mb-4 text-sm">
-    <summary class="cursor-pointer text-neutral-500 uppercase tracking-wide inline-block select-none">
-      Filter{% if selected_tags %} ({{ selected_tags|length }}){% endif %}
-    </summary>
-    <form method="get" class="mt-3 flex flex-wrap gap-x-6 gap-y-2">
-      {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category }}">{% endif %}
-      {% for tag in available_tags %}
-        <label class="flex items-center gap-1.5 text-neutral-700 normal-case tracking-normal">
-          <input type="checkbox" name="tags" value="{{ tag.slug }}" {{ 'checked' if tag.slug in selected_tags else '' }}>
-          {{ tag.name }}
-        </label>
-      {% endfor %}
-      <button type="submit" class="text-neutral-900 underline underline-offset-2">Apply</button>
-    </form>
-  </details>
-{% endif %}
-
 {% if all_keywords %}
   <form method="get" class="mb-8 flex items-center gap-2 text-sm">
     <label for="jump-keyword" class="text-neutral-500 uppercase tracking-wide">Jump to keyword</label>

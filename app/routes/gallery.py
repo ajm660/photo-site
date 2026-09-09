@@ -27,23 +27,6 @@ def index():
 
     photos = photos_query.order_by(Photo.date_taken.desc()).all()
 
-    # Secondary filters are scoped to the selected category (or all published
-    # photos, for "All") so the dropdown only ever shows tags that are
-    # actually relevant, per spec §45's "Dynamic Secondary Filters".
-    category_photos = Photo.query.filter_by(published=True)
-    if category_slug:
-        variant_slugs = PRIMARY_CATEGORY_VARIANT_SLUGS[category_slug]
-        category_photos = category_photos.filter(Photo.keywords.any(Keyword.slug.in_(variant_slugs)))
-
-    available_tags = (
-        Keyword.query.join(Keyword.photos)
-        .filter(Photo.id.in_(category_photos.with_entities(Photo.id)))
-        .filter(~Keyword.slug.in_(ALL_PRIMARY_VARIANT_SLUGS))
-        .distinct()
-        .order_by(Keyword.name)
-        .all()
-    )
-
     categories = [
         {"name": name, "slug": slug} for name, slug in PRIMARY_CATEGORY_SLUGS.items()
     ]
@@ -69,7 +52,6 @@ def index():
         photos=photos,
         categories=categories,
         selected_category=category_slug,
-        available_tags=available_tags,
         selected_tags=set(tag_slugs),
         all_keywords=all_keywords,
         photos_for_lightbox=photos_for_lightbox,
