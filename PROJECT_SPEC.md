@@ -579,7 +579,7 @@ The visual style should be:
 
 Cloudinary should generate appropriate image sizes dynamically.
 
-For example:
+For example: 
 
 ### Thumbnail / grid
 
