@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Sync from Cloudinary{% endblock %}
+
+{% block content %}
+<h1 class="text-xl mb-6">Sync from Cloudinary</h1>
+
+<p class="text-sm text-neutral-600 mb-4">
+  Finds photos already uploaded to the <code>photo-site</code> folder in Cloudinary
+  that aren't in the site's database yet, and adds them using their embedded
+  EXIF/IPTC/XMP metadata (title, caption, camera, lens, date taken, keywords).
+  They're published immediately, same as photos uploaded through the
+  <a href="{{ url_for('admin.upload') }}" class="underline">upload form</a>.
+</p>
+
+<form method="post">
+  <button type="submit" class="bg-neutral-900 text-white px-4 py-2">Sync now</button>
+</form>
+{% endblock %}

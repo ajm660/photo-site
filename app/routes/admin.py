@@ -143,6 +143,57 @@ def upload():
     return redirect(url_for("gallery.index"))
 
 
+@admin_bp.route("/sync", methods=["GET", "POST"])
+@login_required
+def sync():
+    if request.method == "GET":
+        return render_template("admin/sync.html")
+
+    existing_ids = {
+        row[0] for row in Photo.query.with_entities(Photo.cloudinary_public_id)
+    }
+    resources = cloudinary_service.list_folder_resources()
+    new_resources = [r for r in resources if r["public_id"] not in existing_ids]
+
+    synced, failed = [], []
+    for resource in new_resources:
+        public_id = resource["public_id"]
+        try:
+            image_metadata = cloudinary_service.get_image_metadata(public_id)
+            metadata = metadata_service.extract_metadata_from_cloudinary(image_metadata)
+            photo = Photo(
+                cloudinary_public_id=public_id,
+                original_filename=resource.get("original_filename"),
+                title=metadata["title"],
+                description=metadata["description"],
+                width=resource.get("width"),
+                height=resource.get("height"),
+                date_taken=metadata["date_taken"],
+                camera=metadata["camera"],
+                lens=metadata["lens"],
+                published=True,
+            )
+            db.session.add(photo)
+            keyword_service.import_keywords(photo, metadata)
+            db.session.commit()
+            synced.append(public_id)
+        except Exception:
+            db.session.rollback()
+            failed.append(public_id)
+
+    if synced:
+        flash(
+            f"Synced {len(synced)} photograph(s) from Cloudinary: " + ", ".join(synced),
+            "success",
+        )
+    if failed:
+        flash("Failed to sync: " + ", ".join(failed), "error")
+    if not synced and not failed:
+        flash("No new photographs found in Cloudinary.", "success")
+
+    return redirect(url_for("admin.sync"))
+
+
 def _is_valid_image(path):
     try:
         with Image.open(path) as img:

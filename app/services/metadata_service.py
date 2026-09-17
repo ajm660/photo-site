@@ -39,6 +39,27 @@ def extract_metadata(file_path):
     if not data:
         return dict(EMPTY_METADATA)
 
+    return _map_tags(data)
+
+
+def extract_metadata_from_cloudinary(image_metadata):
+    """Map the raw EXIF/IPTC/XMP dict returned by Cloudinary's
+    `image_metadata` resource option into the same shape extract_metadata()
+    produces from exiftool, so photos synced from Cloudinary get the same
+    title/description/date/camera/lens/keyword handling as photos uploaded
+    through the admin form.
+
+    Cloudinary returns the same underlying tag names as exiftool, but
+    repeatable fields (Keywords, HierarchicalSubject) may come back as a
+    comma-joined string rather than a JSON array, so _as_list splits those.
+    """
+    if not image_metadata:
+        return dict(EMPTY_METADATA)
+
+    return _map_tags(image_metadata)
+
+
+def _map_tags(data):
     return {
         "title": data.get("Title"),
         "description": data.get("Caption-Abstract") or data.get("Description"),
@@ -69,6 +90,8 @@ def _as_list(value):
         return []
     if isinstance(value, list):
         return value
+    if isinstance(value, str) and "," in value:
+        return [v.strip() for v in value.split(",") if v.strip()]
     return [value]
 
 
