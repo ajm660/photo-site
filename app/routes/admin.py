@@ -179,6 +179,7 @@ def sync():
             synced.append(public_id)
         except Exception:
             db.session.rollback()
+            current_app.logger.exception("Failed to sync photo %s", public_id)
             failed.append(public_id)
 
     if synced:
