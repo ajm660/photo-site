@@ -1,6 +1,6 @@
 # Photography Website
 
-Personal photography portfolio. Flask + PostgreSQL + Cloudinary, keywords sourced from Lightroom Classic exports. See [PROJECT_SPEC.md](PROJECT_SPEC.md) for the full design.
+Personal photography portfolio. Flask + PostgreSQL + Cloudinary, keywords sourced from Lightroom Classic exports. See [PROJECT_SPEC_UPDATED.md](PROJECT_SPEC_UPDATED.md) for the full design.
 
 ## Local setup
 
