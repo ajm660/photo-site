@@ -1355,10 +1355,11 @@ For example:
 
 ```python
 PRIMARY_CATEGORIES = [
-    "Street",
-    "Architecture",
-    "Landscape",
     "People",
+    "Architecture & Urban",
+    "Landscape & Nature",
+    "Objects",
+    "Abstract",
 ]
 ```
 
