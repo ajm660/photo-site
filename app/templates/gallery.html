@@ -3,31 +3,38 @@
 {% block title %}Photography{% endblock %}
 
 {% block content %}
-<nav class="mb-4 flex flex-wrap gap-x-5 gap-y-2 text-sm uppercase tracking-wide text-neutral-500">
-  <a href="{{ url_for('gallery.index') }}"
-     class="{{ 'text-neutral-900 font-medium' if not selected_category else 'hover:text-neutral-900' }}">
-    All
-  </a>
-  {% for cat in categories %}
-    <a href="{{ url_for('gallery.index', category=cat.slug) }}"
-       class="{{ 'text-neutral-900 font-medium' if selected_category == cat.slug else 'hover:text-neutral-900' }}">
-      {{ cat.name }}
-    </a>
-  {% endfor %}
-</nav>
+<div class="mb-8 rounded-2xl border border-neutral-300 p-6">
+  <div class="mb-4 flex items-center justify-between gap-4">
+    <h2 class="text-lg font-medium">Browse photographs</h2>
+    {% if selected_category != 'all' or selected_tags %}
+      <a href="{{ url_for('gallery.index') }}" class="text-sm text-neutral-500 underline underline-offset-2 hover:text-neutral-900">Clear filters</a>
+    {% endif %}
+  </div>
 
-{% if all_keywords %}
-  <form method="get" class="mb-8 flex items-center gap-2 text-sm">
-    <label for="jump-keyword" class="text-neutral-500 uppercase tracking-wide">Jump to keyword</label>
-    <select id="jump-keyword" name="tags" onchange="this.form.submit()" class="border border-neutral-300 px-2 py-1 normal-case">
-      <option value="">Any category, any keyword…</option>
-      {% for kw in all_keywords %}
-        <option value="{{ kw.slug }}" {{ 'selected' if selected_tags|length == 1 and kw.slug in selected_tags and not selected_category else '' }}>{{ kw.name }}</option>
-      {% endfor %}
-    </select>
-    <noscript><button type="submit" class="text-neutral-900 underline underline-offset-2">Go</button></noscript>
-  </form>
-{% endif %}
+  <p class="mb-2 text-sm uppercase tracking-wide text-neutral-500">Category</p>
+  <nav class="mb-4 flex flex-wrap gap-2">
+    {% for cat in categories %}
+      <a href="{{ url_for('gallery.index', category=cat.slug, tags=selected_tags|list) }}"
+         class="rounded-full border px-3 py-1 text-sm {{ 'border-neutral-900 bg-neutral-900 text-white' if selected_category == cat.slug else 'border-neutral-300 text-neutral-600 hover:border-neutral-900 hover:text-neutral-900' }}">
+        {{ cat.name }}
+      </a>
+    {% endfor %}
+  </nav>
+
+  {% if all_keywords %}
+    <p class="mb-2 text-sm uppercase tracking-wide text-neutral-500">Keyword</p>
+    <form method="get" class="flex items-center gap-2 text-sm">
+      <input type="hidden" name="category" value="{{ selected_category }}">
+      <select id="jump-keyword" name="tags" onchange="this.form.submit()" class="rounded-full border border-neutral-300 px-3 py-1.5 normal-case">
+        <option value="">All keywords</option>
+        {% for kw in all_keywords %}
+          <option value="{{ kw.slug }}" {{ 'selected' if kw.slug in selected_tags else '' }}>{{ kw.name }}</option>
+        {% endfor %}
+      </select>
+      <noscript><button type="submit" class="text-neutral-900 underline underline-offset-2">Go</button></noscript>
+    </form>
+  {% endif %}
+</div>
 
 <div class="masonry-gallery" x-data='lightboxGallery({{ photos_for_lightbox | tojson }})'>
   {% for photo in photos %}
