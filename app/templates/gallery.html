@@ -14,8 +14,8 @@
   <p class="mb-2 text-sm uppercase tracking-wide text-neutral-500">Category</p>
   <nav class="mb-4 flex flex-wrap gap-2">
     {% for cat in categories %}
-      <a href="{{ url_for('gallery.index', category=cat.slug, tags=selected_tags|list) }}"
-         class="rounded-full border px-3 py-1 text-sm {{ 'border-neutral-900 bg-neutral-900 text-white' if selected_category == cat.slug else 'border-neutral-300 text-neutral-600 hover:border-neutral-900 hover:text-neutral-900' }}">
+      <a href="{{ url_for('gallery.index', category=cat.slug) }}"
+         class="rounded-md border px-3 py-1 text-sm {{ 'border-neutral-900 bg-neutral-900 text-white' if selected_category == cat.slug else 'border-neutral-300 text-neutral-600 hover:border-neutral-900 hover:text-neutral-900' }}">
         {{ cat.name }}
       </a>
     {% endfor %}
@@ -23,16 +23,42 @@
 
   {% if all_keywords %}
     <p class="mb-2 text-sm uppercase tracking-wide text-neutral-500">Keyword</p>
-    <form method="get" class="flex items-center gap-2 text-sm">
-      <input type="hidden" name="category" value="{{ selected_category }}">
-      <select id="jump-keyword" name="tags" onchange="this.form.submit()" class="rounded-full border border-neutral-300 px-3 py-1.5 normal-case">
-        <option value="">All keywords</option>
+    <div class="relative inline-block w-56" x-data="{ open: false }" @click.outside="open = false">
+      <button type="button" @click="open = !open"
+              class="flex w-full items-center justify-between gap-2 rounded-md border border-neutral-300 px-3 py-1.5 text-sm text-neutral-900">
+        <span>{{ selected_keyword.name if selected_keyword else 'All keywords' }}</span>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+             class="h-4 w-4 shrink-0 text-neutral-500 transition-transform duration-150"
+             :class="{ 'rotate-180': open }">
+          <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+        </svg>
+      </button>
+      <div x-show="open" x-cloak
+           class="absolute left-0 right-0 top-full z-10 mt-1 max-h-64 overflow-y-auto rounded-md border border-neutral-300 bg-white text-sm shadow-sm">
+        <a href="{{ url_for('gallery.index', category=selected_category) }}"
+           class="block px-3 py-1.5 {{ 'font-medium text-neutral-900' if not selected_keyword else 'text-neutral-600 hover:bg-neutral-100' }}">
+          All keywords <span class="text-neutral-400">({{ category_photo_count }})</span>
+        </a>
         {% for kw in all_keywords %}
-          <option value="{{ kw.slug }}" {{ 'selected' if kw.slug in selected_tags else '' }}>{{ kw.name }}</option>
+          <a href="{{ url_for('gallery.index', category=selected_category, tags=[kw.slug]) }}"
+             class="block px-3 py-1.5 {{ 'font-medium text-neutral-900' if selected_keyword and selected_keyword.slug == kw.slug else 'text-neutral-600 hover:bg-neutral-100' }}">
+            {{ kw.name }} <span class="text-neutral-400">({{ kw.count }})</span>
+          </a>
         {% endfor %}
-      </select>
-      <noscript><button type="submit" class="text-neutral-900 underline underline-offset-2">Go</button></noscript>
-    </form>
+      </div>
+    </div>
+    <noscript>
+      <form method="get" class="mt-2 flex items-center gap-2 text-sm">
+        <input type="hidden" name="category" value="{{ selected_category }}">
+        <select name="tags" onchange="this.form.submit()" class="rounded-md border border-neutral-300 px-3 py-1.5 normal-case">
+          <option value="">All keywords ({{ category_photo_count }})</option>
+          {% for kw in all_keywords %}
+            <option value="{{ kw.slug }}" {{ 'selected' if kw.slug in selected_tags else '' }}>{{ kw.name }} ({{ kw.count }})</option>
+          {% endfor %}
+        </select>
+        <button type="submit" class="text-neutral-900 underline underline-offset-2">Go</button>
+      </form>
+    </noscript>
   {% endif %}
 </div>
 
