@@ -5,13 +5,20 @@ from app.models import Keyword
 
 
 def get_or_create_keyword(name, parent=None):
-    """Find an existing keyword by slug (case-insensitive) or create it."""
+    """Find an existing keyword by slug (case-insensitive) or create it.
+
+    A leading underscore (e.g. "_Person") is a Lightroom-only convention to
+    pin a keyword to the top of its keyword list there, so it's stripped
+    before slugifying and storing - it should never affect category
+    matching or be visible on the site.
+    """
+    name = name.strip().lstrip("_").strip()
     slug = slugify(name)
     keyword = Keyword.query.filter_by(slug=slug).first()
     if keyword:
         return keyword
 
-    keyword = Keyword(name=name.strip(), slug=slug, parent=parent)
+    keyword = Keyword(name=name, slug=slug, parent=parent)
     db.session.add(keyword)
     return keyword
 
