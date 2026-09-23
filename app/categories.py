@@ -25,6 +25,14 @@ PRIMARY_CATEGORIES = {
     "Abstract": ["Abstract"],
 }
 
+# Shorter display names shown on narrow (mobile) viewports, where the full
+# name would wrap or crowd the nav. Categories not listed here just use
+# their full name at every width.
+PRIMARY_CATEGORY_SHORT_NAMES = {
+    "Architecture & Urban": "Urban",
+    "Landscape & Nature": "Nature",
+}
+
 # The Lightroom keyword used to mark a photo as ready for the website —
 # every photo exported for the site should carry it. The "All" pseudo
 # category filters on this keyword directly instead of assuming every row

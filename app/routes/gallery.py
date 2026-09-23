@@ -4,6 +4,7 @@ from sqlalchemy import func
 from app.categories import (
     ALL_CATEGORY_SLUG,
     ALL_PRIMARY_VARIANT_SLUGS,
+    PRIMARY_CATEGORY_SHORT_NAMES,
     PRIMARY_CATEGORY_SLUGS,
     PRIMARY_CATEGORY_VARIANT_SLUGS,
     WEB_KEYWORD_SLUG,
@@ -40,8 +41,9 @@ def index():
 
     category_photo_count = category_photos.count()
 
-    categories = [{"name": "All", "slug": ALL_CATEGORY_SLUG}] + [
-        {"name": name, "slug": slug} for name, slug in PRIMARY_CATEGORY_SLUGS.items()
+    categories = [{"name": "All", "slug": ALL_CATEGORY_SLUG, "short_name": "All"}] + [
+        {"name": name, "slug": slug, "short_name": PRIMARY_CATEGORY_SHORT_NAMES.get(name, name)}
+        for name, slug in PRIMARY_CATEGORY_SLUGS.items()
     ]
 
     # Every keyword occurring within the current category (excluding the
