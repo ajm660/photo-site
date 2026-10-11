@@ -40,6 +40,14 @@
           <button type="submit" class="text-neutral-500 hover:text-neutral-900">Log out</button>
         </form>
       </div>
+    {% else %}
+      <div class="relative group text-sm">
+        <a href="{{ url_for('admin.login', next=request.path) }}" class="text-neutral-500 hover:text-neutral-900">Log in</a>
+        <span role="tooltip"
+              class="pointer-events-none absolute right-0 top-full mt-2 whitespace-nowrap bg-neutral-900 text-white text-xs px-3 py-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+          password hint: zs
+        </span>
+      </div>
     {% endif %}
   </header>
 
