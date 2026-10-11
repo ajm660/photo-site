@@ -12,9 +12,34 @@
   <header class="max-w-6xl mx-auto px-3 sm:px-6 py-8 flex items-center justify-between">
     <a href="{{ url_for('gallery.index') }}" class="text-lg tracking-widest uppercase">Photography</a>
     {% if session.get('admin_logged_in') %}
-      <form method="post" action="{{ url_for('admin.logout') }}">
-        <button type="submit" class="text-sm text-neutral-500 hover:text-neutral-900">Log out</button>
-      </form>
+      <div class="flex items-center gap-5 text-sm">
+        <form method="post" action="{{ url_for('admin.upload') }}" enctype="multipart/form-data"
+              class="relative group" x-data="{ busy: false }">
+          <label class="cursor-pointer text-neutral-500 hover:text-neutral-900">
+            <span x-text="busy ? 'Uploading…' : 'Upload'">Upload</span>
+            <input type="file" name="photo" accept="image/jpeg" multiple class="sr-only"
+                   @change="if ($event.target.files.length) { busy = true; $el.form.submit() }">
+          </label>
+          <span role="tooltip"
+                class="pointer-events-none absolute right-0 top-full mt-2 w-56 bg-neutral-900 text-white text-xs px-3 py-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+            Choose JPEGs to upload to Cloudinary and publish with their Lightroom metadata.
+          </span>
+        </form>
+
+        <form method="post" action="{{ url_for('admin.sync') }}" class="relative group" x-data="{ busy: false }"
+              @submit="busy = true">
+          <button type="submit" class="text-neutral-500 hover:text-neutral-900" :disabled="busy"
+                  x-text="busy ? 'Syncing…' : 'Sync'">Sync</button>
+          <span role="tooltip"
+                class="pointer-events-none absolute right-0 top-full mt-2 w-56 bg-neutral-900 text-white text-xs px-3 py-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+            Import photos already in the Cloudinary folder that aren't on the site yet.
+          </span>
+        </form>
+
+        <form method="post" action="{{ url_for('admin.logout') }}">
+          <button type="submit" class="text-neutral-500 hover:text-neutral-900">Log out</button>
+        </form>
+      </div>
     {% endif %}
   </header>
 
