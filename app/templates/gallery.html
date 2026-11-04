@@ -87,14 +87,11 @@
   >
     <div class="flex items-center justify-between px-4 py-3 text-sm text-white/70">
       <span x-text="active === null ? '' : `${active + 1} / ${photos.length}`"></span>
-      <div class="flex items-center gap-5">
-        <a :href="current().href" class="hover:text-white">Details</a>
-        <button @click="close()" class="hover:text-white" aria-label="Close">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" class="h-7 w-7">
-            <path stroke-linecap="round" d="M6 6l12 12M18 6L6 18" />
-          </svg>
-        </button>
-      </div>
+      <button @click="close()" class="hover:text-white" aria-label="Close">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" class="h-7 w-7">
+          <path stroke-linecap="round" d="M6 6l12 12M18 6L6 18" />
+        </svg>
+      </button>
     </div>
 
     <div class="relative flex min-h-0 flex-1 items-center justify-center px-2 sm:px-16">
@@ -119,6 +116,11 @@
     <div class="min-h-14 px-4 py-3 text-center text-sm text-white/70">
       <p x-show="current().caption" x-text="current().caption" class="text-white"></p>
       <p x-show="current().description" x-text="current().description" class="mx-auto max-w-2xl"></p>
+      <ul x-show="current().keywords?.length" class="mt-1 flex flex-wrap justify-center gap-x-4 gap-y-1">
+        <template x-for="keyword in current().keywords || []" :key="keyword.name">
+          <li><a :href="keyword.url" x-text="keyword.name" class="underline decoration-white/30 underline-offset-2 hover:text-white hover:decoration-white"></a></li>
+        </template>
+      </ul>
     </div>
   </div>
 </div>

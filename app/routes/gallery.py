@@ -1,5 +1,6 @@
 from flask import Blueprint, abort, current_app, render_template, request, url_for
 from sqlalchemy import func
+from sqlalchemy.orm import selectinload
 
 from app.categories import (
     ALL_CATEGORY_SLUG,
@@ -40,7 +41,9 @@ def index():
     for slug in tag_slugs:
         photos_query = photos_query.filter(Photo.keywords.any(Keyword.slug == slug))
 
-    photos = photos_query.order_by(*NEWEST_FIRST).all()
+    photos = (
+        photos_query.options(selectinload(Photo.keywords)).order_by(*NEWEST_FIRST).all()
+    )
 
     category_photo_count = category_photos.count()
 
@@ -77,7 +80,7 @@ def index():
             "title": p.title or p.original_filename,
             "caption": p.title or "",
             "description": p.description or "",
-            "href": url_for("gallery.photo_detail", photo_id=p.id),
+            "keywords": _keyword_links(p),
         }
         for p in photos
     ]
