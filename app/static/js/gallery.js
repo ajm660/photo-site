@@ -49,6 +49,28 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 document.addEventListener("alpine:init", () => {
+  Alpine.data("contactForm", () => ({
+    status: "idle",
+
+    async submit(event) {
+      const form = event.target;
+      this.status = "sending";
+      try {
+        const response = await fetch(form.action, {
+          method: "POST",
+          headers: { Accept: "application/json" },
+          body: new FormData(form),
+        });
+        const result = await response.json();
+        if (!result.success) throw new Error(result.message);
+        form.reset();
+        this.status = "sent";
+      } catch {
+        this.status = "error";
+      }
+    },
+  }));
+
   Alpine.data("lightboxGallery", (photos) => ({
     photos,
     active: null,

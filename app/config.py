@@ -20,6 +20,9 @@ class Config:
     SITE_TITLE = "Some Photographs"
     SITE_OWNER = "Andrew May"
 
-    # Optional: the Contact page and its links only appear once one is set.
-    CONTACT_EMAIL = os.environ.get("CONTACT_EMAIL")
+    # Web3Forms delivers the Contact form to my inbox. This key is designed to
+    # be public: it appears in the page source and doesn't reveal the address.
+    WEB3FORMS_ACCESS_KEY = "4aaadc96-fcac-4f36-9bb4-489223d92b30"
+
+    # Optional: shown as a link on the Contact page and in the footer.
     INSTAGRAM_URL = os.environ.get("INSTAGRAM_URL")

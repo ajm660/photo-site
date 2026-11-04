@@ -34,7 +34,6 @@ def create_app(config_class=Config):
         return {
             "site_title": app.config["SITE_TITLE"],
             "site_owner": app.config["SITE_OWNER"],
-            "contact_email": app.config["CONTACT_EMAIL"],
             "instagram_url": app.config["INSTAGRAM_URL"],
             "current_year": date.today().year,
         }

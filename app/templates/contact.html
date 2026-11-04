@@ -3,16 +3,45 @@
 {% block title %}Contact · {{ site_title }}{% endblock %}
 
 {% block content %}
-<div class="max-w-xl">
+<div class="max-w-xl" x-data="contactForm">
   <h1 class="mb-4 font-serif text-2xl">Contact</h1>
-  <p class="mb-4 text-neutral-600">It's always nice to hear from someone who enjoyed the photos.</p>
-  <ul class="space-y-1">
-    {% if contact_email %}
-      <li><a href="mailto:{{ contact_email }}" class="underline underline-offset-2">{{ contact_email }}</a></li>
-    {% endif %}
-    {% if instagram_url %}
-      <li><a href="{{ instagram_url }}" class="underline underline-offset-2" rel="noopener">Instagram</a></li>
-    {% endif %}
-  </ul>
+  <p class="mb-6 text-neutral-600">It's always nice to hear from someone who enjoyed the photos.</p>
+
+  <form action="https://api.web3forms.com/submit" method="post" class="space-y-4"
+        x-show="status !== 'sent'" @submit.prevent="submit($event)">
+    <input type="hidden" name="access_key" value="{{ web3forms_access_key }}">
+    <input type="hidden" name="subject" value="New Contact from {{ site_title }}">
+    <input type="hidden" name="from_name" value="{{ site_title }}">
+    <input type="checkbox" name="botcheck" class="hidden" tabindex="-1" autocomplete="off">
+
+    <div>
+      <label class="mb-1 block text-sm" for="name">Name</label>
+      <input class="w-full border border-neutral-300 px-3 py-2 focus:border-neutral-900 focus:outline-none" type="text" id="name" name="name" autocomplete="name" required>
+    </div>
+    <div>
+      <label class="mb-1 block text-sm" for="email">Email</label>
+      <input class="w-full border border-neutral-300 px-3 py-2 focus:border-neutral-900 focus:outline-none" type="email" id="email" name="email" autocomplete="email" required>
+    </div>
+    <div>
+      <label class="mb-1 block text-sm" for="message">Message</label>
+      <textarea class="w-full border border-neutral-300 px-3 py-2 focus:border-neutral-900 focus:outline-none" id="message" name="message" rows="6" required></textarea>
+    </div>
+
+    <p x-show="status === 'error'" x-cloak role="alert" class="text-sm text-red-600">
+      Sorry, your message didn't send. Please try again.
+    </p>
+    <button type="submit" class="bg-neutral-900 px-4 py-2 text-sm text-white disabled:opacity-60"
+            :disabled="status === 'sending'" x-text="status === 'sending' ? 'Sending…' : 'Send message'">Send message</button>
+  </form>
+
+  <p x-show="status === 'sent'" x-cloak role="status" class="text-neutral-900">
+    Thanks, your message has been sent.
+  </p>
+
+  {% if instagram_url %}
+    <p class="mt-6 text-sm text-neutral-500">
+      You can also find me on <a href="{{ instagram_url }}" class="underline underline-offset-2 hover:text-neutral-900" rel="noopener">Instagram</a>.
+    </p>
+  {% endif %}
 </div>
 {% endblock %}

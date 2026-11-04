@@ -16,9 +16,7 @@
     <a href="{{ url_for('gallery.index') }}" class="font-serif text-2xl">{{ site_title }}</a>
     <div class="flex flex-wrap items-baseline gap-x-5 gap-y-2 text-sm">
       <a href="{{ url_for('gallery.about') }}" class="text-neutral-500 hover:text-neutral-900">About</a>
-      {% if contact_email or instagram_url %}
-        <a href="{{ url_for('gallery.contact') }}" class="text-neutral-500 hover:text-neutral-900">Contact</a>
-      {% endif %}
+      <a href="{{ url_for('gallery.contact') }}" class="text-neutral-500 hover:text-neutral-900">Contact</a>
       {% if session.get('admin_logged_in') %}
         <form method="post" action="{{ url_for('admin.upload') }}" enctype="multipart/form-data"
               class="relative group" x-data="{ busy: false }">
@@ -68,11 +66,8 @@
 
   <footer class="max-w-6xl 2xl:max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-10 pb-8 w-full flex flex-wrap justify-between gap-x-8 gap-y-2 text-sm text-neutral-500">
     <p>&copy; {{ current_year }} {{ site_owner }}</p>
-    {% if contact_email or instagram_url %}
-      <div class="flex gap-5">
-        {% if instagram_url %}<a href="{{ instagram_url }}" class="hover:text-neutral-900" rel="noopener">Instagram</a>{% endif %}
-        {% if contact_email %}<a href="mailto:{{ contact_email }}" class="hover:text-neutral-900">Email</a>{% endif %}
-      </div>
+    {% if instagram_url %}
+      <a href="{{ instagram_url }}" class="hover:text-neutral-900" rel="noopener">Instagram</a>
     {% endif %}
   </footer>
 </body>

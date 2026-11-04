@@ -117,9 +117,9 @@ def about():
 
 @gallery_bp.route("/contact")
 def contact():
-    if not (current_app.config["CONTACT_EMAIL"] or current_app.config["INSTAGRAM_URL"]):
-        abort(404)
-    return render_template("contact.html")
+    return render_template(
+        "contact.html", web3forms_access_key=current_app.config["WEB3FORMS_ACCESS_KEY"]
+    )
 
 
 def _adjacent_photo_ids(photo):
