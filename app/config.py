@@ -17,7 +17,7 @@ class Config:
 
     MAX_CONTENT_LENGTH = 25 * 1024 * 1024  # 25 MB upload limit
 
-    SITE_TITLE = "Some Photographs"
+    SITE_TITLE = "Andrew - photos"
     SITE_OWNER = "Andrew May"
 
     # Web3Forms delivers the Contact form to my inbox. This key is designed to
