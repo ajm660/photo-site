@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Contact · {{ site_title }}{% endblock %}
+
+{% block content %}
+<div class="max-w-xl">
+  <h1 class="mb-4 font-serif text-2xl">Contact</h1>
+  <p class="mb-4 text-neutral-600">It's always nice to hear from someone who enjoyed the photos.</p>
+  <ul class="space-y-1">
+    {% if contact_email %}
+      <li><a href="mailto:{{ contact_email }}" class="underline underline-offset-2">{{ contact_email }}</a></li>
+    {% endif %}
+    {% if instagram_url %}
+      <li><a href="{{ instagram_url }}" class="underline underline-offset-2" rel="noopener">Instagram</a></li>
+    {% endif %}
+  </ul>
+</div>
+{% endblock %}

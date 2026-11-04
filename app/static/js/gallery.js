@@ -29,8 +29,13 @@ document.addEventListener("DOMContentLoaded", () => {
     };
     items.forEach((item) => {
       const image = item.querySelector("img");
-      image.addEventListener("load", scheduleLayout);
-      image.addEventListener("error", scheduleLayout);
+      const reveal = () => {
+        image.classList.add("is-loaded");
+        scheduleLayout();
+      };
+      image.addEventListener("load", reveal);
+      image.addEventListener("error", reveal);
+      if (image.complete) image.classList.add("is-loaded");
     });
     let previousWidth;
     new ResizeObserver(([entry]) => {
@@ -47,10 +52,24 @@ document.addEventListener("alpine:init", () => {
   Alpine.data("lightboxGallery", (photos) => ({
     photos,
     active: null,
+    imageLoaded: false,
     touchX: null,
 
     open(index) {
+      this.show(index);
+    },
+
+    show(index) {
+      if (index === this.active) return;
+      this.imageLoaded = false;
       this.active = index;
+      this.preload(index + 1);
+      this.preload(index - 1);
+    },
+
+    preload(index) {
+      const count = this.photos.length;
+      new Image().src = this.photos[(index + count) % count].src;
     },
 
     close() {
@@ -63,12 +82,12 @@ document.addEventListener("alpine:init", () => {
 
     prev() {
       if (this.active === null) return;
-      this.active = (this.active - 1 + this.photos.length) % this.photos.length;
+      this.show((this.active - 1 + this.photos.length) % this.photos.length);
     },
 
     next() {
       if (this.active === null) return;
-      this.active = (this.active + 1) % this.photos.length;
+      this.show((this.active + 1) % this.photos.length);
     },
 
     touchStart(event) {

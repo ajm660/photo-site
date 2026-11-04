@@ -52,6 +52,14 @@ PRIMARY_CATEGORY_VARIANT_SLUGS = {
     for name, variants in PRIMARY_CATEGORIES.items()
 }
 
+# Keyword variant slug -> the category URL slug it belongs to, e.g.
+# "object" -> "objects".
+PRIMARY_CATEGORY_BY_VARIANT_SLUG = {
+    variant_slug: category_slug
+    for category_slug, variant_slugs in PRIMARY_CATEGORY_VARIANT_SLUGS.items()
+    for variant_slug in variant_slugs
+}
+
 # Every variant slug across all categories, for excluding primary-category
 # keywords from the secondary keyword filter.
 ALL_PRIMARY_VARIANT_SLUGS = {

@@ -1,9 +1,10 @@
-from flask import Blueprint, abort, render_template, request
+from flask import Blueprint, abort, current_app, render_template, request, url_for
 from sqlalchemy import func
 
 from app.categories import (
     ALL_CATEGORY_SLUG,
     ALL_PRIMARY_VARIANT_SLUGS,
+    PRIMARY_CATEGORY_BY_VARIANT_SLUG,
     PRIMARY_CATEGORY_SHORT_NAMES,
     PRIMARY_CATEGORY_SLUGS,
     PRIMARY_CATEGORY_VARIANT_SLUGS,
@@ -13,6 +14,8 @@ from app.extensions import db
 from app.models import Keyword, Photo
 
 gallery_bp = Blueprint("gallery", __name__)
+
+NEWEST_FIRST = (Photo.date_taken.desc(), Photo.id.desc())
 
 
 @gallery_bp.route("/")
@@ -37,7 +40,7 @@ def index():
     for slug in tag_slugs:
         photos_query = photos_query.filter(Photo.keywords.any(Keyword.slug == slug))
 
-    photos = photos_query.order_by(Photo.date_taken.desc()).all()
+    photos = photos_query.order_by(*NEWEST_FIRST).all()
 
     category_photo_count = category_photos.count()
 
@@ -69,7 +72,14 @@ def index():
     )
 
     photos_for_lightbox = [
-        {"src": p.large_url, "title": p.title or p.original_filename} for p in photos
+        {
+            "src": p.large_url,
+            "title": p.title or p.original_filename,
+            "caption": p.title or "",
+            "description": p.description or "",
+            "href": url_for("gallery.photo_detail", photo_id=p.id),
+        }
+        for p in photos
     ]
 
     return render_template(
@@ -90,4 +100,59 @@ def photo_detail(photo_id):
     photo = Photo.query.get_or_404(photo_id)
     if not photo.published:
         abort(404)
-    return render_template("photo.html", photo=photo)
+    newer_id, older_id = _adjacent_photo_ids(photo)
+    return render_template(
+        "photo.html",
+        photo=photo,
+        newer_id=newer_id,
+        older_id=older_id,
+        keyword_links=_keyword_links(photo),
+    )
+
+
+@gallery_bp.route("/about")
+def about():
+    return render_template("about.html")
+
+
+@gallery_bp.route("/contact")
+def contact():
+    if not (current_app.config["CONTACT_EMAIL"] or current_app.config["INSTAGRAM_URL"]):
+        abort(404)
+    return render_template("contact.html")
+
+
+def _adjacent_photo_ids(photo):
+    """The photos either side of this one in the "All" gallery's order, as
+    (newer_id, older_id). Either is None at the ends, and both are None if
+    this photo isn't in that gallery."""
+    ids = [
+        row[0]
+        for row in Photo.query.filter_by(published=True)
+        .filter(Photo.keywords.any(Keyword.slug == WEB_KEYWORD_SLUG))
+        .order_by(*NEWEST_FIRST)
+        .with_entities(Photo.id)
+    ]
+    if photo.id not in ids:
+        return None, None
+    index = ids.index(photo.id)
+    newer_id = ids[index - 1] if index > 0 else None
+    older_id = ids[index + 1] if index < len(ids) - 1 else None
+    return newer_id, older_id
+
+
+def _keyword_links(photo):
+    """A photo's keywords as gallery links: category keywords open their
+    category, others filter by keyword, and the "web" tag is left out."""
+    links = []
+    for keyword in sorted(photo.keywords, key=lambda k: k.name.lower()):
+        if keyword.slug == WEB_KEYWORD_SLUG:
+            continue
+        category = PRIMARY_CATEGORY_BY_VARIANT_SLUG.get(keyword.slug)
+        url = (
+            url_for("gallery.index", category=category)
+            if category
+            else url_for("gallery.index", tags=[keyword.slug])
+        )
+        links.append({"name": keyword.name, "url": url})
+    return links

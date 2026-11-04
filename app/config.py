@@ -16,3 +16,10 @@ class Config:
     ADMIN_PASSWORD_HASH = os.environ.get("ADMIN_PASSWORD_HASH")
 
     MAX_CONTENT_LENGTH = 25 * 1024 * 1024  # 25 MB upload limit
+
+    SITE_TITLE = "Some Photographs"
+    SITE_OWNER = "Andrew May"
+
+    # Optional: the Contact page and its links only appear once one is set.
+    CONTACT_EMAIL = os.environ.get("CONTACT_EMAIL")
+    INSTAGRAM_URL = os.environ.get("INSTAGRAM_URL")

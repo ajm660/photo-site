@@ -1,3 +1,5 @@
+from datetime import date
+
 import cloudinary
 from flask import Flask
 
@@ -26,5 +28,15 @@ def create_app(config_class=Config):
     app.register_blueprint(admin_bp, url_prefix="/admin")
 
     from app import models  # noqa: F401  (registers models with SQLAlchemy)
+
+    @app.context_processor
+    def inject_site_details():
+        return {
+            "site_title": app.config["SITE_TITLE"],
+            "site_owner": app.config["SITE_OWNER"],
+            "contact_email": app.config["CONTACT_EMAIL"],
+            "instagram_url": app.config["INSTAGRAM_URL"],
+            "current_year": date.today().year,
+        }
 
     return app

@@ -1,66 +1,62 @@
 {% extends "base.html" %}
 
-{% block title %}Photography{% endblock %}
-
 {% block content %}
-<div class="mb-3">
-  {% if selected_category != 'all' or selected_tags %}
-    <div class="mb-2 flex justify-end">
-      <a href="{{ url_for('gallery.index') }}" class="text-sm text-neutral-500 underline underline-offset-2 hover:text-neutral-900">Clear filters</a>
-    </div>
-  {% endif %}
-
-  <nav class="mb-4 flex flex-wrap gap-2">
+<div class="mb-6 flex flex-wrap items-baseline justify-between gap-x-8 gap-y-3 border-b border-neutral-200 pb-3 text-sm">
+  <nav aria-label="Categories" class="flex flex-wrap gap-x-5 gap-y-2">
     {% for cat in categories %}
       <a href="{{ url_for('gallery.index', category=cat.slug) }}"
-         class="border px-3 py-1 text-sm {{ 'border-neutral-900 bg-neutral-900 text-white' if selected_category == cat.slug else 'border-neutral-300 text-neutral-600 hover:border-neutral-900 hover:text-neutral-900' }}">
+         {% if selected_category == cat.slug %}aria-current="page"{% endif %}
+         class="border-b pb-0.5 {{ 'border-neutral-900 text-neutral-900' if selected_category == cat.slug else 'border-transparent text-neutral-500 hover:text-neutral-900' }}">
         <span class="sm:hidden">{{ cat.short_name }}</span>
         <span class="hidden sm:inline">{{ cat.name }}</span>
       </a>
     {% endfor %}
   </nav>
 
-  {% if all_keywords %}
-    <div class="mb-4 flex items-center gap-2">
-      <span class="text-sm text-neutral-500">Keywords:</span>
-      <div class="relative inline-block w-56" x-data="{ open: false }" @click.outside="open = false">
-        <button type="button" @click="open = !open"
-                class="flex w-full items-center justify-between gap-2 rounded-md border border-neutral-300 bg-neutral-100 px-3 py-1.5 text-sm text-neutral-900">
-          <span>{{ selected_keyword.name if selected_keyword else 'All' }}</span>
+  <div class="flex flex-wrap items-baseline gap-x-5 gap-y-2">
+    {% if all_keywords %}
+      <div class="relative" x-data="{ open: false }" @click.outside="open = false">
+        <button type="button" @click="open = !open" :aria-expanded="open"
+                class="flex items-center gap-1 text-neutral-500 hover:text-neutral-900">
+          <span>Keywords: <span class="text-neutral-900">{{ selected_keyword.name if selected_keyword else 'All' }}</span></span>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-               class="h-4 w-4 shrink-0 text-neutral-500 transition-transform duration-150"
+               class="h-4 w-4 shrink-0 transition-transform duration-150"
                :class="{ 'rotate-180': open }">
             <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
           </svg>
         </button>
         <div x-show="open" x-cloak
-             class="absolute left-0 right-0 top-full z-10 mt-1 max-h-64 overflow-y-auto rounded-md border border-neutral-300 bg-white text-sm shadow-sm">
+             class="absolute left-0 sm:left-auto sm:right-0 top-full z-10 mt-2 max-h-64 w-56 overflow-y-auto border border-neutral-200 bg-white py-1 shadow-sm">
           <a href="{{ url_for('gallery.index', category=selected_category) }}"
-             class="block px-3 py-1.5 {{ 'font-medium text-neutral-900' if not selected_keyword else 'text-neutral-600 hover:bg-neutral-100' }}">
+             class="block px-3 py-1.5 {{ 'text-neutral-900' if not selected_keyword else 'text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900' }}">
             All keywords <span class="text-neutral-400">({{ category_photo_count }})</span>
           </a>
           {% for kw in all_keywords %}
             <a href="{{ url_for('gallery.index', category=selected_category, tags=[kw.slug]) }}"
-               class="block px-3 py-1.5 {{ 'font-medium text-neutral-900' if selected_keyword and selected_keyword.slug == kw.slug else 'text-neutral-600 hover:bg-neutral-100' }}">
+               class="block px-3 py-1.5 {{ 'text-neutral-900' if selected_keyword and selected_keyword.slug == kw.slug else 'text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900' }}">
               {{ kw.name }} <span class="text-neutral-400">({{ kw.count }})</span>
             </a>
           {% endfor %}
         </div>
       </div>
-    </div>
-    <noscript>
-      <form method="get" class="mt-2 flex items-center gap-2 text-sm">
-        <input type="hidden" name="category" value="{{ selected_category }}">
-        <select name="tags" onchange="this.form.submit()" class="rounded-md border border-neutral-300 px-3 py-1.5 normal-case">
-          <option value="">All keywords ({{ category_photo_count }})</option>
-          {% for kw in all_keywords %}
-            <option value="{{ kw.slug }}" {{ 'selected' if kw.slug in selected_tags else '' }}>{{ kw.name }} ({{ kw.count }})</option>
-          {% endfor %}
-        </select>
-        <button type="submit" class="text-neutral-900 underline underline-offset-2">Go</button>
-      </form>
-    </noscript>
-  {% endif %}
+      <noscript>
+        <form method="get" class="flex items-center gap-2">
+          <input type="hidden" name="category" value="{{ selected_category }}">
+          <select name="tags" onchange="this.form.submit()" class="border border-neutral-200 px-2 py-1">
+            <option value="">All keywords ({{ category_photo_count }})</option>
+            {% for kw in all_keywords %}
+              <option value="{{ kw.slug }}" {{ 'selected' if kw.slug in selected_tags else '' }}>{{ kw.name }} ({{ kw.count }})</option>
+            {% endfor %}
+          </select>
+          <button type="submit" class="text-neutral-900 underline underline-offset-2">Go</button>
+        </form>
+      </noscript>
+    {% endif %}
+
+    {% if selected_category != 'all' or selected_tags %}
+      <a href="{{ url_for('gallery.index') }}" class="text-neutral-500 underline underline-offset-2 hover:text-neutral-900">Clear filters</a>
+    {% endif %}
+  </div>
 </div>
 
 <div class="masonry-gallery" x-data='lightboxGallery({{ photos_for_lightbox | tojson }})'>
@@ -81,19 +77,49 @@
   <div
     x-show="active !== null"
     x-cloak
-    class="fixed inset-0 z-50 flex items-center justify-center bg-black/95"
+    x-transition.opacity.duration.200ms
+    class="fixed inset-0 z-50 flex flex-col bg-neutral-950 text-white"
     @keydown.window.escape="close()"
     @keydown.window.arrow-left="prev()"
     @keydown.window.arrow-right="next()"
     @touchstart="touchStart($event)"
     @touchend="touchEnd($event)"
   >
-    <button @click="close()" class="absolute top-4 right-4 text-3xl leading-none text-white/80 hover:text-white" aria-label="Close">&times;</button>
-    <button @click="prev()" class="absolute left-2 sm:left-4 text-4xl text-white/80 hover:text-white" aria-label="Previous photo">&#8249;</button>
-    <template x-if="active !== null">
-      <img :src="current().src" :alt="current().title" class="max-h-[90vh] max-w-[92vw] object-contain">
-    </template>
-    <button @click="next()" class="absolute right-2 sm:right-4 text-4xl text-white/80 hover:text-white" aria-label="Next photo">&#8250;</button>
+    <div class="flex items-center justify-between px-4 py-3 text-sm text-white/70">
+      <span x-text="active === null ? '' : `${active + 1} / ${photos.length}`"></span>
+      <div class="flex items-center gap-5">
+        <a :href="current().href" class="hover:text-white">Details</a>
+        <button @click="close()" class="hover:text-white" aria-label="Close">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" class="h-7 w-7">
+            <path stroke-linecap="round" d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="relative flex min-h-0 flex-1 items-center justify-center px-2 sm:px-16">
+      <button x-show="photos.length > 1" @click="prev()" class="absolute left-1 top-1/2 z-10 -translate-y-1/2 text-white/70 hover:text-white sm:left-4" aria-label="Previous photo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="h-10 w-10">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 5l-7 7 7 7" />
+        </svg>
+      </button>
+      <template x-if="active !== null">
+        <img :src="current().src" :alt="current().title"
+             @load="imageLoaded = true" @error="imageLoaded = true"
+             class="max-h-full max-w-full object-contain transition-opacity duration-200"
+             :class="imageLoaded ? 'opacity-100' : 'opacity-0'">
+      </template>
+      <button x-show="photos.length > 1" @click="next()" class="absolute right-1 top-1/2 z-10 -translate-y-1/2 text-white/70 hover:text-white sm:right-4" aria-label="Next photo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="h-10 w-10">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="min-h-14 px-4 py-3 text-center text-sm text-white/70">
+      <p x-show="current().caption" x-text="current().caption" class="text-white"></p>
+      <p x-show="current().description" x-text="current().description" class="mx-auto max-w-2xl"></p>
+    </div>
   </div>
 </div>
 {% endblock %}
