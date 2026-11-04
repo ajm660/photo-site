@@ -4,39 +4,43 @@
   display: none !important;
 }
 
-/* Masonry gallery: a fixed minimum column count, each photo shown at its
-   own natural aspect ratio (no cropping, no forced row height). Pure CSS
-   multi-column layout — no JS, and no stretched-last-photo problem, since
-   items are never resized to fill leftover space. */
+/* Row-ordered fallback; JavaScript packs photos into the shortest column. */
 .masonry-gallery {
-  column-count: 2;
-  column-gap: 0.25rem;
+  --gallery-columns: 2;
+  display: grid;
+  grid-template-columns: repeat(var(--gallery-columns), minmax(0, 1fr));
+  gap: 0.25rem;
+  align-items: start;
 }
 
 .masonry-gallery > a {
   display: block;
-  break-inside: avoid;
-  margin-bottom: 0.25rem;
 }
 
-.masonry-gallery img {
+.masonry-gallery > a > img {
   display: block;
   width: 100%;
   height: auto;
 }
 
+.masonry-gallery[data-masonry] {
+  display: block;
+  position: relative;
+}
+
+.masonry-gallery[data-masonry] > a {
+  position: absolute;
+}
+
 @media (min-width: 640px) {
   .masonry-gallery {
-    column-count: 3;
-    column-gap: 0.5rem;
-  }
-  .masonry-gallery > a {
-    margin-bottom: 0.5rem;
+    --gallery-columns: 3;
+    gap: 0.5rem;
   }
 }
 
 @media (min-width: 1024px) {
   .masonry-gallery {
-    column-count: 4;
+    --gallery-columns: 4;
   }
 }
